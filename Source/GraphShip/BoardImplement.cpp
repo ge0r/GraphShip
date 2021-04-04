@@ -34,11 +34,21 @@ void UBoardImplement::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UBoardImplement::GenerateBoard()
 {
-	FRotator myRot(0, 0, 0);
-	FVector myLoc(0, 1, 0);
+	FRotator myRotation(0, 0, 0);
 	UE_LOG(LogTemp, Warning, TEXT("Generating Board"));
-	AActor* SpawnedPoint1 = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLoc, myRot);
-	AActor* SpawnedPoint2 = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLoc*10, myRot);
-	AActor* SpawnedPoint3 = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLoc*100, myRot);
-	AActor* SpawnedPoint4 = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLoc*1000, myRot);
+	FVector myLoc(10, 10 , 0);
+
+	int pointNum = Width * Height;
+	AActor** BoardPoints = new AActor* [pointNum];
+	int count = 0;
+
+	for (int i=0; i<Height; i++) {
+		for (int j = 0; j < Width; j++) {
+			FVector myLocation(i * Spacing, j *Spacing , 0);
+			UE_LOG(LogTemp, Warning, TEXT("Generating Point %d"), count);
+
+			BoardPoints[count] = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLocation, myRotation);
+			count++;
+		}
+	}
 }
