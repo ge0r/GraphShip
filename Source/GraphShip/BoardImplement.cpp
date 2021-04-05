@@ -20,7 +20,7 @@ void UBoardImplement::BeginPlay()
 	Super::BeginPlay();
 
 	GenerateBoard();
-	
+	SpawnShip();
 }
 
 
@@ -34,9 +34,8 @@ void UBoardImplement::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UBoardImplement::GenerateBoard()
 {
-	FRotator myRotation(0, 0, 0);
 	UE_LOG(LogTemp, Warning, TEXT("Generating Board"));
-	FVector myLoc(10, 10 , 0);
+	FRotator myRotation(0, 0, 0);
 
 	int pointNum = Width * Height;
 	AActor** BoardPoints = new AActor* [pointNum];
@@ -51,4 +50,12 @@ void UBoardImplement::GenerateBoard()
 			count++;
 		}
 	}
+}
+
+void UBoardImplement::SpawnShip()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Spawning Ship"));
+	FRotator myRotation(0, 0, 0);
+	FVector myLocation(0, 0 , 0);
+	AActor* Ship = (AActor*)GetWorld()->SpawnActor<AActor>(BP_ShipClass, myLocation, myRotation);
 }
