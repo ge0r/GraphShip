@@ -21,6 +21,7 @@ void UBoardImplement::BeginPlay()
 
 	GenerateBoard();
 	SpawnShip();
+	InitializeCameraPosition();
 }
 
 
@@ -38,16 +39,22 @@ void UBoardImplement::GenerateBoard()
 	FRotator myRotation(0, 0, 0);
 
 	int pointNum = Width * Height;
-	AActor** BoardPoints = new AActor* [pointNum];
-	int count = 0;
+	int offsetX = Spacing * (int)(Width / 2);
+	int offsetY = Spacing * (int)(Height / 2);
 
-	for (int i=0; i<Height; i++) {
+	// TODO Make this a 2d array
+	AActor*** BoardPoints = new AActor** [Width];
+	for (int i = 0; i < Width; i++) {
+		BoardPoints[i] = new AActor* [Height];
+	}
+
+	for (int i = 0; i < Height; i++) {
 		for (int j = 0; j < Width; j++) {
-			FVector myLocation(i * Spacing, j *Spacing , 0);
-			UE_LOG(LogTemp, Warning, TEXT("Generating Point %d"), count);
-
-			BoardPoints[count] = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLocation, myRotation);
-			count++;
+			int xCoord = i * Spacing - offsetX;
+			int yCoord = j * Spacing - offsetY;
+			UE_LOG(LogTemp, Warning, TEXT("Generating Point at [%d, %d]"), xCoord, yCoord);
+			FVector myLocation(xCoord, yCoord, 0);
+			BoardPoints[i][j] = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLocation, myRotation);
 		}
 	}
 }
@@ -58,4 +65,9 @@ void UBoardImplement::SpawnShip()
 	FRotator myRotation(0, 0, 0);
 	FVector myLocation(0, 0 , 0);
 	AActor* Ship = (AActor*)GetWorld()->SpawnActor<AActor>(BP_ShipClass, myLocation, myRotation);
+}
+
+void UBoardImplement::InitializeCameraPosition()
+{
+	Camera->SetActorLocation(FVector(0, 0, Width * Spacing));
 }
