@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "BoardImplement.generated.h"
 
+class ASpaceShip;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GRAPHSHIP_API UBoardImplement : public UActorComponent
@@ -47,4 +48,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
     int Spacing;
+
+	ASpaceShip *Ship = nullptr;
+	bool Debug = false;
 };
