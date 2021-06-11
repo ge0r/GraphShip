@@ -23,13 +23,6 @@ void UBoardImplement::BeginPlay()
     GenerateBoard();
 	SpawnShip();
 	InitializeCameraPosition();
-
-	if (Ship) {
-		Ship->TeleportCall();
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("Ship not initialized"));
-	}
 }
 
 

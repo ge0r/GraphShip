@@ -11,15 +11,18 @@ class GRAPHSHIP_API ASpaceShip : public APawn
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this pawn's properties
-	ASpaceShip();
+private:
+	UPROPERTY(EditAnywhere)
+	float Speed = 50;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	// Sets default values for this pawn's properties
+	ASpaceShip();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -27,5 +30,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BLueprintCallable, Category = Custom)
-	void TeleportCall();
+	void MoveTowardsDirection(FVector Direction, float DeltaTime);
 };

@@ -23,6 +23,9 @@ void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// TODO set direction based on InputAction from Blueprint
+	FVector Direction = FVector(1, 0, 0);
+	MoveTowardsDirection(Direction, DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -32,7 +35,9 @@ void ASpaceShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
-void ASpaceShip::TeleportCall()
+void ASpaceShip::MoveTowardsDirection(FVector Direction, float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Teleport"));
+	FVector Location = GetActorLocation();
+	Location += Direction * Speed *DeltaTime;
+	SetActorLocation(Location);
 }
