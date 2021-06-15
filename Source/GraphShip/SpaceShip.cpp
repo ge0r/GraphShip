@@ -2,6 +2,7 @@
 
 
 #include "SpaceShip.h"
+#include "Math/Vector.h"
 
 // Sets default values
 ASpaceShip::ASpaceShip()
@@ -22,10 +23,7 @@ void ASpaceShip::BeginPlay()
 void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// TODO set direction based on InputAction from Blueprint
-	FVector Direction = FVector(1, 0, 0);
-	MoveTowardsDirection(Direction, DeltaTime);
+	MoveTowardsDirection(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -35,9 +33,18 @@ void ASpaceShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
-void ASpaceShip::MoveTowardsDirection(FVector Direction, float DeltaTime)
+void ASpaceShip::MoveTowardsDirection(float DeltaTime)
 {
 	FVector Location = GetActorLocation();
 	Location += Direction * Speed *DeltaTime;
 	SetActorLocation(Location);
 }
+
+// TODO Lerp towards rotation change
+void ASpaceShip::RequestDirectionChange(FVector Dir) {
+	if (Direction != Dir) {
+		Direction = Dir;
+		SetActorRotation(Direction.ToOrientationQuat(), ETeleportType::None);
+	}
+}
+

@@ -14,6 +14,7 @@ class GRAPHSHIP_API ASpaceShip : public APawn
 private:
 	UPROPERTY(EditAnywhere)
 	float Speed = 50;
+	FVector Direction = FVector(1, 0, 0);
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,6 +30,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void MoveTowardsDirection(float DeltaTime);
+
 	UFUNCTION(BLueprintCallable, Category = Custom)
-	void MoveTowardsDirection(FVector Direction, float DeltaTime);
+	void RequestDirectionChange(FVector Direction);
 };
