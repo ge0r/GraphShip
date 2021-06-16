@@ -16,6 +16,8 @@ ASpaceShip::ASpaceShip()
 void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
+	StartOrientation = GetActorRotation().Quaternion();
+	EndOrientation = Direction.ToOrientationQuat();
 	
 }
 
@@ -23,7 +25,22 @@ void ASpaceShip::BeginPlay()
 void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	MoveTowardsDirection(DeltaTime);
+
+	// Lerp towards rotation change
+	if (LerpRotationTimeElapsed < LerpRotationDuration) {
+		SetActorRotation(FMath::Lerp(StartOrientation, EndOrientation, LerpRotationTimeElapsed / LerpRotationDuration));
+
+		// Keep track of elapsed time
+		LerpRotationTimeElapsed += DeltaTime;
+	}
+	else if (ClampRotation){
+		// Clamp the rotation to the required value if Lerping is done
+		SetActorRotation(Direction.ToOrientationQuat());
+		UE_LOG(LogTemp, Warning, TEXT("Actor clamped to %s"), *GetActorRotation().Euler().ToString());
+		ClampRotation = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -40,11 +57,19 @@ void ASpaceShip::MoveTowardsDirection(float DeltaTime)
 	SetActorLocation(Location);
 }
 
-// TODO Lerp towards rotation change
 void ASpaceShip::RequestDirectionChange(FVector Dir) {
 	if (Direction != Dir) {
+		UE_LOG(LogTemp, Warning, TEXT("Direction change"));
 		Direction = Dir;
-		SetActorRotation(Direction.ToOrientationQuat(), ETeleportType::None);
+		StartOrientation = GetActorRotation().Quaternion();
+		EndOrientation = Direction.ToOrientationQuat();
+
+		UE_LOG(LogTemp, Warning, TEXT("StartOrientation: %s EndOrientation: %s"), *StartOrientation.Euler().ToString(), *EndOrientation.Euler().ToString());
+
+		// Reset time to lerp rotation
+		LerpRotationTimeElapsed = 0;
+		// Reset clamping
+		ClampRotation = true;
 	}
 }
 

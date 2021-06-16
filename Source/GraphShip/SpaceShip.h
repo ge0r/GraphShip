@@ -12,9 +12,14 @@ class GRAPHSHIP_API ASpaceShip : public APawn
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere)
-	float Speed = 50;
+	float Speed = 200;
 	FVector Direction = FVector(1, 0, 0);
+	float LerpRotationDuration = 0.2;
+
+	FQuat StartOrientation;
+	FQuat EndOrientation;
+	float LerpRotationTimeElapsed = 0;
+	float ClampRotation = true;
 
 protected:
 	// Called when the game starts or when spawned
