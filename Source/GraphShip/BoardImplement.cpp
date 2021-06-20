@@ -41,7 +41,7 @@ void UBoardImplement::GenerateBoard()
 	int offsetX = Spacing * (int)(Width / 2);
 	int offsetY = Spacing * (int)(Height / 2);
 
-	AActor*** Board = new AActor** [Width];
+	Board = new AActor** [Width];
 	for (int i = 0; i < Width; i++) {
 		Board[i] = new AActor* [Height];
 	}
@@ -63,9 +63,12 @@ void UBoardImplement::GenerateBoard()
 void UBoardImplement::SpawnShip()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Spawning Ship"));
-	FRotator myRotation(0, 0, 0);
-	FVector myLocation(0, 0 , 0);
-	Ship = GetWorld()->SpawnActor<ASpaceShip>(BP_ShipClass, myLocation, myRotation);
+	FRotator SpawnRotation(0, 0, 0);
+
+	// Choose the SpawnPoint
+	AActor* SpawnPoint = Board[12][12];
+	FVector SpawnLocation = SpawnPoint->GetActorLocation();
+	Ship = GetWorld()->SpawnActor<ASpaceShip>(BP_ShipClass, SpawnLocation, SpawnRotation);
 }
 
 void UBoardImplement::InitializeCameraPosition()

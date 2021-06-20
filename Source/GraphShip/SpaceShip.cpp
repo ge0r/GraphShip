@@ -10,14 +10,13 @@ ASpaceShip::ASpaceShip()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	LerpRotator = CreateDefaultSubobject<USpaceShipRotatorComponent>(FName("LerpRotator Component"));
 }
 
 // Called when the game starts or when spawned
 void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
-	StartOrientation = GetActorRotation().Quaternion();
-	EndOrientation = Direction.ToOrientationQuat();
 	
 }
 
@@ -26,21 +25,8 @@ void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MoveTowardsDirection(DeltaTime);
-
-	// Lerp towards rotation change
-	if (LerpRotationTimeElapsed < LerpRotationDuration) {
-		SetActorRotation(FMath::Lerp(StartOrientation, EndOrientation, LerpRotationTimeElapsed / LerpRotationDuration));
-
-		// Keep track of elapsed time
-		LerpRotationTimeElapsed += DeltaTime;
-	}
-	else if (ClampRotation){
-		// Clamp the rotation to the required value if Lerping is done
-		SetActorRotation(Direction.ToOrientationQuat());
-		UE_LOG(LogTemp, Warning, TEXT("Actor clamped to %s"), *GetActorRotation().Euler().ToString());
-		ClampRotation = false;
-	}
+	FindNextPoint();
+	MoveToNextPoint(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -50,6 +36,18 @@ void ASpaceShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+// TODO implement find next point
+void ASpaceShip::FindNextPoint()
+{
+
+}
+
+void ASpaceShip::MoveToNextPoint(float DeltaTime)
+{
+	// TODO Check if next point requires a direction change
+	MoveTowardsDirection(DeltaTime);
+}
+
 void ASpaceShip::MoveTowardsDirection(float DeltaTime)
 {
 	FVector Location = GetActorLocation();
@@ -57,19 +55,16 @@ void ASpaceShip::MoveTowardsDirection(float DeltaTime)
 	SetActorLocation(Location);
 }
 
+
+// RequestDirectionChange is called from blueprints, via the BP_SpaceShip class 
 void ASpaceShip::RequestDirectionChange(FVector Dir) {
+	// If the requsted direction is not the same as the current direction, change direction
 	if (Direction != Dir) {
-		UE_LOG(LogTemp, Warning, TEXT("Direction change"));
+		UE_LOG(LogTemp, Warning, TEXT("Direction changes"));
 		Direction = Dir;
-		StartOrientation = GetActorRotation().Quaternion();
-		EndOrientation = Direction.ToOrientationQuat();
 
-		UE_LOG(LogTemp, Warning, TEXT("StartOrientation: %s EndOrientation: %s"), *StartOrientation.Euler().ToString(), *EndOrientation.Euler().ToString());
-
-		// Reset time to lerp rotation
-		LerpRotationTimeElapsed = 0;
-		// Reset clamping
-		ClampRotation = true;
+		// Reset the Lerp Rotator component
+		LerpRotator->Reset();
 	}
 }
 

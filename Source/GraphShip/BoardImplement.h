@@ -49,6 +49,8 @@ private:
 	UPROPERTY(EditAnywhere)
     int Spacing;
 
+	AActor*** Board;
+
 	ASpaceShip *Ship = nullptr;
 	bool Debug = false;
 };
