@@ -33,6 +33,6 @@ private:
 	FQuat StartOrientation;
 	FQuat EndOrientation;
 	float LerpRotationTimeElapsed = 0;
-	float ClampRotation = true;
+	bool ClampRotation = true;
 		
 };

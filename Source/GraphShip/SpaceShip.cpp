@@ -2,7 +2,6 @@
 
 
 #include "SpaceShip.h"
-#include "Math/Vector.h"
 
 // Sets default values
 ASpaceShip::ASpaceShip()
@@ -25,8 +24,7 @@ void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FindNextPoint();
-	MoveToNextPoint(DeltaTime);
+	// Do nothing for now, movement calls are handled by BoardImplement
 }
 
 // Called to bind functionality to input
@@ -36,33 +34,47 @@ void ASpaceShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
-// TODO implement find next point
-void ASpaceShip::FindNextPoint()
-{
-
-}
-
 void ASpaceShip::MoveToNextPoint(float DeltaTime)
 {
-	// TODO Check if next point requires a direction change
-	MoveTowardsDirection(DeltaTime);
+	if (LerpMovementTimeElapsed < MovementDuration) {
+		HasReachedNextPoint = false;
+		
+		SetActorLocation(FMath::Lerp<FVector>(CurrentPoint->GetActorLocation(), NextPoint->GetActorLocation(), LerpMovementTimeElapsed / MovementDuration));
+		LerpMovementTimeElapsed += DeltaTime;
+	}
+	else {
+		HasReachedNextPoint = true;
+		LerpMovementTimeElapsed = 0;
+	}
 }
 
+
+// TODO delete
 void ASpaceShip::MoveTowardsDirection(float DeltaTime)
 {
 	FVector Location = GetActorLocation();
-	Location += Direction * Speed *DeltaTime;
+	Location += NextDirection * Speed *DeltaTime;
 	SetActorLocation(Location);
 }
 
+void ASpaceShip::SetCurrentPoint(AActor *Point)
+{
+	CurrentPoint = Point;
+}
+
+void ASpaceShip::SetNextPoint(AActor *Point)
+{
+	NextPoint = Point;
+}
 
 // RequestDirectionChange is called from blueprints, via the BP_SpaceShip class 
 void ASpaceShip::RequestDirectionChange(FVector Dir) {
 	// If the requsted direction is not the same as the current direction, change direction
-	if (Direction != Dir) {
+	if (NextDirection != Dir) {
 		UE_LOG(LogTemp, Warning, TEXT("Direction changes"));
-		Direction = Dir;
+		NextDirection = Dir;
 
+		// TODO be carefull with this one, could reset even when just going straight
 		// Reset the Lerp Rotator component
 		LerpRotator->Reset();
 	}

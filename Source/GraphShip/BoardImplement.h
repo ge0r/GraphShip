@@ -13,21 +13,6 @@ class GRAPHSHIP_API UBoardImplement : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	UBoardImplement();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void GenerateBoard();
-	void SpawnShip();
-	void InitializeCameraPosition();
-
 private:
 	// Declare a property of type blueprint, to spawn as class later
 	UPROPERTY(EditAnywhere)
@@ -53,4 +38,24 @@ private:
 
 	ASpaceShip *Ship = nullptr;
 	bool Debug = false;
+	FVector2D ShipCurrentCoords;
+	FVector2D ShipNextCoords;
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:	
+	// Sets default values for this component's properties
+	UBoardImplement();
+
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void GenerateBoard();
+	void SpawnShip();
+	void InitializeCameraPosition();
+	void UpdateShipPoints();
+
+	AActor* GetPointFromCoords(FVector2D Coords);
+
 };

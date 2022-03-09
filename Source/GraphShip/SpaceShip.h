@@ -15,8 +15,11 @@ class GRAPHSHIP_API ASpaceShip : public APawn
 private:
 	float Speed = 200;
 
-	// TODO create c++ class for point
-	AActor* CurrentPoint;
+	AActor *CurrentPoint;
+	AActor *NextPoint;
+	float MovementDuration = 0.5;
+	float LerpMovementTimeElapsed = 0;
+	bool ClampMovement = true;
 	USpaceShipRotatorComponent* LerpRotator = nullptr;
 
 protected:
@@ -33,11 +36,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	FVector Direction = FVector(1, 0, 0);
+	FVector NextDirection = FVector(1, 0, 0);
+	bool HasReachedNextPoint = false;
 
-	void FindNextPoint();
 	void MoveToNextPoint(float DeltaTime);
 	void MoveTowardsDirection(float DeltaTime);
+	void SetCurrentPoint(AActor *Point);
+	void SetNextPoint(AActor *Point);
 
 	UFUNCTION(BLueprintCallable, Category = Custom)
 	void RequestDirectionChange(FVector Direction);

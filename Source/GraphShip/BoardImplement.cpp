@@ -30,6 +30,11 @@ void UBoardImplement::BeginPlay()
 void UBoardImplement::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (Ship->HasReachedNextPoint) {
+		UpdateShipPoints();
+	}
+	Ship->MoveToNextPoint(DeltaTime);
 }
 
 void UBoardImplement::GenerateBoard()
@@ -65,13 +70,43 @@ void UBoardImplement::SpawnShip()
 	UE_LOG(LogTemp, Warning, TEXT("Spawning Ship"));
 	FRotator SpawnRotation(0, 0, 0);
 
-	// Choose the SpawnPoint
-	AActor* SpawnPoint = Board[12][12];
+	// Choose the SpawnPoint.
+	// For now the SpawnPoint is in the middle of the board.
+	FVector2D BoardSpawnCoords = FVector2D(int(Height / 2), int(Width / 2));
+	AActor* SpawnPoint = Board[int(BoardSpawnCoords.X)][int(BoardSpawnCoords.Y)];
 	FVector SpawnLocation = SpawnPoint->GetActorLocation();
 	Ship = GetWorld()->SpawnActor<ASpaceShip>(BP_ShipClass, SpawnLocation, SpawnRotation);
+	ShipNextCoords = BoardSpawnCoords;
+	UpdateShipPoints();
 }
 
 void UBoardImplement::InitializeCameraPosition()
 {
 	Camera->SetActorLocation(FVector(0, 0, Width * Spacing));
+}
+
+// Updates the Ship's next and current point
+void UBoardImplement::UpdateShipPoints()
+{
+	ShipCurrentCoords = ShipNextCoords;
+	Ship->SetCurrentPoint(GetPointFromCoords(ShipCurrentCoords));
+
+	ShipNextCoords = ShipCurrentCoords + FVector2D(Ship->NextDirection.X, Ship->NextDirection.Y);
+	Ship->SetNextPoint(GetPointFromCoords(ShipNextCoords));
+	Ship->HasReachedNextPoint = false;
+
+
+	// Print Ship direction and next point on screen
+	FString ScreenMsg = FString::Printf(TEXT("Ship's next Direction is: %s || Next Coords are: %s"), *Ship->NextDirection.ToString(), *ShipNextCoords.ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, ScreenMsg);
+
+	// DEBUG: Change the color of the next point
+}
+
+AActor* UBoardImplement::GetPointFromCoords(FVector2D Coords)
+{	
+	AActor* Point = Board[int(Coords.X)][int(Coords.Y)];
+	//UE_LOG(LogTemp, Warning, TEXT("Next point is actor %s"), *Point->GetName());
+
+	return Point;
 }
