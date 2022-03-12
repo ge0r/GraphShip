@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "BoardImplement.generated.h"
+#include "GameFramework/Actor.h"
+#include "TrailComponent.h"
+#include "Board.generated.h"
 
 class ASpaceShip;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class GRAPHSHIP_API UBoardImplement : public UActorComponent
+UCLASS() 
+class GRAPHSHIP_API ABoard : public AActor
 {
 	GENERATED_BODY()
 
@@ -34,9 +35,9 @@ private:
 	UPROPERTY(EditAnywhere)
     int Spacing;
 
-	AActor*** Board;
-
-	ASpaceShip *Ship = nullptr;
+	AActor*** BoardGrid;
+	ASpaceShip* Ship = nullptr;
+	UTrailComponent* Trail = nullptr;
 	bool Debug = false;
 	FVector2D ShipCurrentCoords;
 	FVector2D ShipNextCoords;
@@ -46,16 +47,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Sets default values for this component's properties
-	UBoardImplement();
-
+	// Sets default values for this actor's properties
+	ABoard();
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void Tick(float DeltaTime) override;
+
 	void GenerateBoard();
 	void SpawnShip();
 	void InitializeCameraPosition();
 	void UpdateShipPoints();
-
 	AActor* GetPointFromCoords(FVector2D Coords);
-
 };

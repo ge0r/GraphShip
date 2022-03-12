@@ -43,18 +43,13 @@ void ASpaceShip::MoveToNextPoint(float DeltaTime)
 		LerpMovementTimeElapsed += DeltaTime;
 	}
 	else {
-		HasReachedNextPoint = true;
 		LerpMovementTimeElapsed = 0;
+		HasReachedNextPoint = true;
+
+		if (JustSpawned) {
+			JustSpawned = false;
+		}
 	}
-}
-
-
-// TODO delete
-void ASpaceShip::MoveTowardsDirection(float DeltaTime)
-{
-	FVector Location = GetActorLocation();
-	Location += NextDirection * Speed *DeltaTime;
-	SetActorLocation(Location);
 }
 
 void ASpaceShip::SetCurrentPoint(AActor *Point)
@@ -67,14 +62,18 @@ void ASpaceShip::SetNextPoint(AActor *Point)
 	NextPoint = Point;
 }
 
+void ASpaceShip::Die()
+{
+	IsAlive = false;
+}
+
 // RequestDirectionChange is called from blueprints, via the BP_SpaceShip class 
 void ASpaceShip::RequestDirectionChange(FVector Dir) {
 	// If the requsted direction is not the same as the current direction, change direction
 	if (NextDirection != Dir) {
-		UE_LOG(LogTemp, Warning, TEXT("Direction changes"));
+		//UE_LOG(LogTemp, Warning, TEXT("Direction changes"));
 		NextDirection = Dir;
 
-		// TODO be carefull with this one, could reset even when just going straight
 		// Reset the Lerp Rotator component
 		LerpRotator->Reset();
 	}

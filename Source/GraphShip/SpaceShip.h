@@ -38,11 +38,13 @@ public:
 
 	FVector NextDirection = FVector(1, 0, 0);
 	bool HasReachedNextPoint = false;
+	bool IsAlive = true;
+	bool JustSpawned = true;
 
 	void MoveToNextPoint(float DeltaTime);
-	void MoveTowardsDirection(float DeltaTime);
 	void SetCurrentPoint(AActor *Point);
 	void SetNextPoint(AActor *Point);
+	void Die();
 
 	UFUNCTION(BLueprintCallable, Category = Custom)
 	void RequestDirectionChange(FVector Direction);

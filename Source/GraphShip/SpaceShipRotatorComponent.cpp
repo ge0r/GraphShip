@@ -44,7 +44,7 @@ void USpaceShipRotatorComponent::Reset()
 	// Reset clamping
 	ClampRotation = true;
 
-	UE_LOG(LogTemp, Warning, TEXT("StartOrientation: %s EndOrientation: %s"), *StartOrientation.Euler().ToString(), *EndOrientation.Euler().ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("StartOrientation: %s EndOrientation: %s"), *StartOrientation.Euler().ToString(), *EndOrientation.Euler().ToString());
 }
 
 void USpaceShipRotatorComponent::HandleRotation(float DeltaTime) 
@@ -62,7 +62,7 @@ void USpaceShipRotatorComponent::HandleRotation(float DeltaTime)
 	else if (ClampRotation) {
 		// Clamp the rotation to the required value if Lerping is done
 		Owner->SetActorRotation(Owner->NextDirection.ToOrientationQuat());
-		UE_LOG(LogTemp, Warning, TEXT("Actor clamped to %s"), *Owner->GetActorRotation().Euler().ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Actor clamped to %s"), *Owner->GetActorRotation().Euler().ToString());
 		ClampRotation = false;
 	}
 }
