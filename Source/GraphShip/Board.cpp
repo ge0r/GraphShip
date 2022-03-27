@@ -30,7 +30,7 @@ void ABoard::Tick(float DeltaTime)
 	if (Ship->IsAlive) {
 		if (Ship->HasReachedNextPoint) {
 			if (!Ship->JustSpawned) {
-				Trail->GenerateSegment(GetPointFromCoords(ShipCurrentCoords), GetPointFromCoords(ShipNextCoords));
+				Trail->GenerateSegment(GetPointFromCoords(ShipCurrentCoords), GetPointFromCoords(ShipNextCoords), BP_TrailSegmentClass);
 			}
 			UpdateShipPoints();
 		}

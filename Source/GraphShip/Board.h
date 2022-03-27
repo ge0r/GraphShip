@@ -23,6 +23,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AActor> BP_ShipClass;
 
+	// Declare a property of type blueprint, to spawn as class later
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AActor> BP_TrailSegmentClass;
+
 	UPROPERTY(EditAnywhere)
 	AActor* Camera;
 
