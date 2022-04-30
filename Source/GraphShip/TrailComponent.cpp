@@ -32,11 +32,17 @@ void UTrailComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 }
 
-void UTrailComponent::GenerateSegment(AActor* FirstPoint, AActor* SecondPoint, TSubclassOf<class AActor> BP_TrailSegmentClass)
+void UTrailComponent::GenerateSegment(AActor* FirstPoint, AActor* SecondPoint, bool FlippedColor, TSubclassOf<class AActor> BP_TrailSegmentClass)
 {
 	//DrawDebugLine(GetWorld(), FirstPoint->GetActorLocation(), SecondPoint->GetActorLocation(), FColor(255, 0, 0), true, 2, 0U, 24);
 	FVector Angle = SecondPoint->GetActorLocation() - FirstPoint->GetActorLocation();
 	FRotator Rotation = FRotationMatrix::MakeFromX(Angle).Rotator();
-	GetWorld()->SpawnActor<AActor>(BP_TrailSegmentClass, FirstPoint->GetActorLocation(), Rotation);
+	AActor* Trail = GetWorld()->SpawnActor<AActor>(BP_TrailSegmentClass, FirstPoint->GetActorLocation(), Rotation);
+
+	if (FlippedColor) {
+		FRotator NewRotation = FRotator(0, 0, 180);
+		FQuat QuatRotation = FQuat(NewRotation);
+		Trail->AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
+	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "Board.h"
 #include "SpaceShip.h"
+#include "Point.h"
 
 // Sets default values
 ABoard::ABoard()
@@ -19,7 +20,7 @@ void ABoard::BeginPlay()
 
 	GenerateBoard();
 	SpawnShip();
-	UpdateShipPoints();
+	UpdatePoints();
 	InitializeCameraPosition();
 }
 
@@ -30,9 +31,12 @@ void ABoard::Tick(float DeltaTime)
 	if (Ship->IsAlive) {
 		if (Ship->HasReachedNextPoint) {
 			if (!Ship->JustSpawned) {
-				Trail->GenerateSegment(GetPointFromCoords(ShipCurrentCoords), GetPointFromCoords(ShipNextCoords), BP_TrailSegmentClass);
+				Trail->GenerateSegment(GetPointFromCoords(ShipCurrentCoords), GetPointFromCoords(ShipNextCoords), Ship->IsColorsFlipped(), BP_TrailSegmentClass);
 			}
-			UpdateShipPoints();
+			CheckPointCollision();
+			// TODO create surface field here
+			UpdatePoints();
+			Ship->UpdateCurrentDirection();
 		}
 		Ship->MoveToNextPoint(DeltaTime);
 	}
@@ -46,9 +50,9 @@ void ABoard::GenerateBoard()
 	int offsetX = Spacing * (int)(Width / 2);
 	int offsetY = Spacing * (int)(Height / 2);
 
-	BoardGrid = new AActor** [Width];
+	BoardGrid = new APoint** [Width];
 	for (int i = 0; i < Width; i++) {
-		BoardGrid[i] = new AActor* [Height];
+		BoardGrid[i] = new APoint* [Height];
 	}
 	for (int i = 0; i < Height; i++) {
 		for (int j = 0; j < Width; j++) {
@@ -57,7 +61,7 @@ void ABoard::GenerateBoard()
 			if (Debug) UE_LOG(LogTemp, Warning, TEXT("Generating Point at [%d, %d]"), xCoord, yCoord);
 			FVector myLocation(xCoord, yCoord, 0);
 			// Spawn a BP_Point Actor
-			BoardGrid[i][j] = (AActor*)GetWorld()->SpawnActor<AActor>(BP_PointClass, myLocation, myRotation);
+			BoardGrid[i][j] = (APoint*)GetWorld()->SpawnActor<APoint>(BP_PointClass, myLocation, myRotation);
 			// Make each Point a child of this component's owner (BP_Board Actor)
 			BoardGrid[i][j]->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 		}
@@ -83,26 +87,51 @@ void ABoard::InitializeCameraPosition()
 	Camera->SetActorLocation(FVector(0, 0, Width * Spacing));
 }
 
-void ABoard::UpdateShipPoints()
+// Updates ship's current and next Points, and sets current Point as visited
+void ABoard::UpdatePoints()
 {
 	ShipCurrentCoords = ShipNextCoords;
-	Ship->SetCurrentPoint(GetPointFromCoords(ShipCurrentCoords));
+	APoint* CurrentPoint = GetPointFromCoords(ShipCurrentCoords);
+	Ship->SetCurrentPoint(CurrentPoint);
 
-	ShipNextCoords = ShipCurrentCoords + FVector2D(Ship->NextDirection.X, Ship->NextDirection.Y);
+	CurrentPoint->SetIsVisited(true);
+	CurrentPoint->SetDirectionVisited(Ship->GetCurrentDirection());
+	CurrentPoint->SetDirectionTookOff(Ship->GetNextDirection());
+
+	ShipNextCoords = ShipCurrentCoords + FVector2D(Ship->GetNextDirection().X, Ship->GetNextDirection().Y);
+	// If the Ship's next Coordinates are off limit, die
 	if (((ShipNextCoords.X < 0) || (ShipNextCoords.X >= Height)) || ((ShipNextCoords.Y < 0) || (ShipNextCoords.Y >= Width))) {
 		Ship->Die();
 	}
 	else {
 		Ship->SetNextPoint(GetPointFromCoords(ShipNextCoords));
 		Ship->HasReachedNextPoint = false;
-		//FString ScreenMsg = FString::Printf(TEXT("Ship's next Direction is: %s || Next Coords are: %s"), *Ship->NextDirection.ToString(), *ShipNextCoords.ToString());
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, ScreenMsg);
 	}
 }
 
-AActor* ABoard::GetPointFromCoords(FVector2D Coords)
+void ABoard::CheckPointCollision()
 {
-	AActor* Point = BoardGrid[int(Coords.X)][int(Coords.Y)];
+	APoint* NextPoint = GetPointFromCoords(ShipNextCoords);
+	
+	if (NextPoint->GetIsVisited())
+	{
+		FVector ShipNextDirection = Ship->GetNextDirection();
+		// If the Ship will leave the point in a direction similar to a took off direction or opposite to a visited direction,
+		// then it crashes and dies
+		if ((ShipNextDirection == -NextPoint->GetDirectionVisited()) || (ShipNextDirection == NextPoint->GetDirectionTookOff())) {
+			Ship->Die();
+			// Print crash status on screen
+			FString ScreenMsg = FString::Printf(TEXT("You crashed in coords"), *ShipNextCoords.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, ScreenMsg);
+		}
+
+		Ship->FlipColors();
+	}
+}
+
+APoint* ABoard::GetPointFromCoords(FVector2D Coords)
+{
+	APoint* Point = BoardGrid[int(Coords.X)][int(Coords.Y)];
 	//UE_LOG(LogTemp, Warning, TEXT("Next point is actor %s"), *Point->GetName());
 	return Point;
 

@@ -16,7 +16,6 @@ ASpaceShip::ASpaceShip()
 void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -62,18 +61,43 @@ void ASpaceShip::SetNextPoint(AActor *Point)
 	NextPoint = Point;
 }
 
+void ASpaceShip::FlipColors()
+{
+	FlippedColors = !FlippedColors;
+	ColorFlipRequest.Broadcast();
+}
+
 void ASpaceShip::Die()
 {
 	IsAlive = false;
 }
 
+void ASpaceShip::UpdateCurrentDirection()
+{
+	CurrentDirection = NextDirection;
+}
+
+bool ASpaceShip::IsColorsFlipped()
+{
+	return FlippedColors;
+}
+
+FVector ASpaceShip::GetCurrentDirection()
+{
+	return CurrentDirection;
+}
+
+FVector ASpaceShip::GetNextDirection()
+{
+	return NextDirection;
+}
+
 // RequestDirectionChange is called from blueprints, via the BP_SpaceShip class 
 void ASpaceShip::RequestDirectionChange(FVector Dir) {
-	// If the requsted direction is not the same as the current direction, change direction
-	if (NextDirection != Dir) {
-		//UE_LOG(LogTemp, Warning, TEXT("Direction changes"));
+	// If the requested direction is not the same or the opposite to the current direction, change direction
+	if (!(CurrentDirection.Equals(Dir) || CurrentDirection.Equals(-Dir))) {
+		UE_LOG(LogTemp, Warning, TEXT("Direction changeds"));
 		NextDirection = Dir;
-
 		// Reset the Lerp Rotator component
 		LerpRotator->Reset();
 	}

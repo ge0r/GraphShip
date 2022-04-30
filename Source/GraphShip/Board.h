@@ -8,6 +8,7 @@
 #include "Board.generated.h"
 
 class ASpaceShip;
+class APoint;
 
 UCLASS() 
 class GRAPHSHIP_API ABoard : public AActor
@@ -39,7 +40,7 @@ private:
 	UPROPERTY(EditAnywhere)
     int Spacing;
 
-	AActor*** BoardGrid;
+	APoint*** BoardGrid;
 	ASpaceShip* Ship = nullptr;
 	UTrailComponent* Trail = nullptr;
 	bool Debug = false;
@@ -59,6 +60,7 @@ public:
 	void GenerateBoard();
 	void SpawnShip();
 	void InitializeCameraPosition();
-	void UpdateShipPoints();
-	AActor* GetPointFromCoords(FVector2D Coords);
+	void UpdatePoints();
+	void CheckPointCollision();
+	APoint* GetPointFromCoords(FVector2D Coords);
 };

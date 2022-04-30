@@ -20,7 +20,7 @@ void USpaceShipRotatorComponent::BeginPlay()
 
 	ASpaceShip* Owner = (ASpaceShip*) GetOwner();
 	StartOrientation = Owner->GetActorRotation().Quaternion();
-	EndOrientation = Owner->NextDirection.ToOrientationQuat();
+	EndOrientation = Owner->GetNextDirection().ToOrientationQuat();
 }
 
 
@@ -37,7 +37,7 @@ void USpaceShipRotatorComponent::Reset()
 	ASpaceShip* Owner = (ASpaceShip*) GetOwner();
 
 	StartOrientation = Owner->GetActorRotation().Quaternion();
-	EndOrientation = Owner->NextDirection.ToOrientationQuat();
+	EndOrientation = Owner->GetNextDirection().ToOrientationQuat();
 
 	// Reset time to lerp rotation, in order to start rotating
 	LerpRotationTimeElapsed = 0;
@@ -61,7 +61,7 @@ void USpaceShipRotatorComponent::HandleRotation(float DeltaTime)
 	// Otherwise, clamp actor rotation only once
 	else if (ClampRotation) {
 		// Clamp the rotation to the required value if Lerping is done
-		Owner->SetActorRotation(Owner->NextDirection.ToOrientationQuat());
+		Owner->SetActorRotation(Owner->GetNextDirection().ToOrientationQuat());
 		//UE_LOG(LogTemp, Warning, TEXT("Actor clamped to %s"), *Owner->GetActorRotation().Euler().ToString());
 		ClampRotation = false;
 	}
