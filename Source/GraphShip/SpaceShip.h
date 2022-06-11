@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FColorFlipRequest);
 
+class APoint;
+
 UCLASS()
 class GRAPHSHIP_API ASpaceShip : public APawn
 {
@@ -17,8 +19,8 @@ class GRAPHSHIP_API ASpaceShip : public APawn
 private:
 	float Speed = 200;
 
-	AActor *CurrentPoint;
-	AActor *NextPoint;
+	APoint *CurrentPoint;
+	APoint *NextPoint;
 	float MovementDuration = 0.5;
 	float LerpMovementTimeElapsed = 0;
 	bool ClampMovement = true;
@@ -46,14 +48,16 @@ public:
 	bool JustSpawned = true;
 
 	void MoveToNextPoint(float DeltaTime);
-	void SetCurrentPoint(AActor *Point);
-	void SetNextPoint(AActor *Point);
+	void SetCurrentPoint(APoint *Point);
+	void SetNextPoint(APoint *Point);
 	void FlipColors();
 	void Die();
 	void UpdateCurrentDirection();
 	bool IsColorsFlipped();
 	FVector GetCurrentDirection();
 	FVector GetNextDirection();
+	APoint* GetCurrentPoint();
+	APoint* GetNextPoint();
 
 	UFUNCTION(BLueprintCallable, Category = Custom)
 	void RequestDirectionChange(FVector Direction);

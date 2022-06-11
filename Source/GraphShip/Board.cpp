@@ -37,8 +37,17 @@ void ABoard::Tick(float DeltaTime)
 			// TODO create surface field here
 			UpdatePoints();
 			Ship->UpdateCurrentDirection();
+			
+			if (PointJustRevisited) {
+				// Only flip colors when revisiting a point with recent visited direction same as the recent took off direction
+				if (Ship->GetCurrentPoint()->GetDirectionVisited() == Ship->GetCurrentPoint()->GetDirectionTookOff()) {
+					Ship->FlipColors();
+				}
+				PointJustRevisited = false;
+			}
 		}
 		Ship->MoveToNextPoint(DeltaTime);
+
 	}
 }
 
@@ -115,17 +124,16 @@ void ABoard::CheckPointCollision()
 	
 	if (NextPoint->GetIsVisited())
 	{
+		PointJustRevisited = true;
 		FVector ShipNextDirection = Ship->GetNextDirection();
 		// If the Ship will leave the point in a direction similar to a took off direction or opposite to a visited direction,
 		// then it crashes and dies
 		if ((ShipNextDirection == -NextPoint->GetDirectionVisited()) || (ShipNextDirection == NextPoint->GetDirectionTookOff())) {
 			Ship->Die();
 			// Print crash status on screen
-			FString ScreenMsg = FString::Printf(TEXT("You crashed in coords"), *ShipNextCoords.ToString());
+			FString ScreenMsg = FString::Printf(TEXT("You crashed in coordinates %s"), *ShipNextCoords.ToString());
 			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, ScreenMsg);
 		}
-
-		Ship->FlipColors();
 	}
 }
 

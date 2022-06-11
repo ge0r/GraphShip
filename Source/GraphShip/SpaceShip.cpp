@@ -2,6 +2,7 @@
 
 
 #include "SpaceShip.h"
+#include "Point.h"
 
 // Sets default values
 ASpaceShip::ASpaceShip()
@@ -51,12 +52,12 @@ void ASpaceShip::MoveToNextPoint(float DeltaTime)
 	}
 }
 
-void ASpaceShip::SetCurrentPoint(AActor *Point)
+void ASpaceShip::SetCurrentPoint(APoint *Point)
 {
 	CurrentPoint = Point;
 }
 
-void ASpaceShip::SetNextPoint(AActor *Point)
+void ASpaceShip::SetNextPoint(APoint *Point)
 {
 	NextPoint = Point;
 }
@@ -92,11 +93,21 @@ FVector ASpaceShip::GetNextDirection()
 	return NextDirection;
 }
 
+APoint* ASpaceShip::GetCurrentPoint()
+{
+	return CurrentPoint;
+}
+
+APoint* ASpaceShip::GetNextPoint()
+{
+	return NextPoint;
+}
+
 // RequestDirectionChange is called from blueprints, via the BP_SpaceShip class 
 void ASpaceShip::RequestDirectionChange(FVector Dir) {
 	// If the requested direction is not the same or the opposite to the current direction, change direction
 	if (!(CurrentDirection.Equals(Dir) || CurrentDirection.Equals(-Dir))) {
-		UE_LOG(LogTemp, Warning, TEXT("Direction changeds"));
+		UE_LOG(LogTemp, Warning, TEXT("Direction changed"));
 		NextDirection = Dir;
 		// Reset the Lerp Rotator component
 		LerpRotator->Reset();

@@ -44,6 +44,7 @@ private:
 	ASpaceShip* Ship = nullptr;
 	UTrailComponent* Trail = nullptr;
 	bool Debug = false;
+	bool PointJustRevisited = false;
 	FVector2D ShipCurrentCoords;
 	FVector2D ShipNextCoords;
 
