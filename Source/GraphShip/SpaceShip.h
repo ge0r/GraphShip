@@ -7,8 +7,6 @@
 #include "SpaceShipRotatorComponent.h"
 #include "SpaceShip.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FColorFlipRequest);
-
 class APoint;
 
 UCLASS()
@@ -62,6 +60,7 @@ public:
 	UFUNCTION(BLueprintCallable, Category = Custom)
 	void RequestDirectionChange(FVector Direction);
 
-	UPROPERTY(BlueprintAssignable)
-	FColorFlipRequest ColorFlipRequest;
+	UFUNCTION(BlueprintImplementableEvent)
+	void FlipColorsBPEvent();
+
 };

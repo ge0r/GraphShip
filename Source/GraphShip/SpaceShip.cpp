@@ -65,7 +65,7 @@ void ASpaceShip::SetNextPoint(APoint *Point)
 void ASpaceShip::FlipColors()
 {
 	FlippedColors = !FlippedColors;
-	ColorFlipRequest.Broadcast();
+	FlipColorsBPEvent();
 }
 
 void ASpaceShip::Die()
@@ -113,4 +113,3 @@ void ASpaceShip::RequestDirectionChange(FVector Dir) {
 		LerpRotator->Reset();
 	}
 }
-
