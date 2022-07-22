@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "SpaceShip.h"
 #include "Point.h"
+#include "Square.h"
 
 // Sets default values
 ABoard::ABoard()
@@ -60,19 +61,23 @@ void ABoard::GenerateBoard()
 	int offsetY = Spacing * (int)(Height / 2);
 
 	BoardGrid = new APoint** [Width];
+	BoardSquares = new ASquare** [Width];
 	for (int i = 0; i < Width; i++) {
 		BoardGrid[i] = new APoint* [Height];
+		BoardSquares[i] = new ASquare* [Height];
 	}
 	for (int i = 0; i < Height; i++) {
 		for (int j = 0; j < Width; j++) {
 			int xCoord = i * Spacing - offsetX;
 			int yCoord = j * Spacing - offsetY;
-			if (Debug) UE_LOG(LogTemp, Warning, TEXT("Generating Point at [%d, %d]"), xCoord, yCoord);
+			UE_LOG(LogTemp, Warning, TEXT("Generating Point at [%d, %d]"), xCoord, yCoord);
 			FVector myLocation(xCoord, yCoord, 0);
 			// Spawn a BP_Point Actor
 			BoardGrid[i][j] = (APoint*)GetWorld()->SpawnActor<APoint>(BP_PointClass, myLocation, myRotation);
+			BoardSquares[i][j] = (ASquare*)GetWorld()->SpawnActor<ASquare>(BP_SquareClass, myLocation, myRotation);
 			// Make each Point a child of this component's owner (BP_Board Actor)
 			BoardGrid[i][j]->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+			BoardSquares[i][j]->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 		}
 	}
 }

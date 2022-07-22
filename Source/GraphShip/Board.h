@@ -9,6 +9,7 @@
 
 class ASpaceShip;
 class APoint;
+class ASquare;
 
 UCLASS() 
 class GRAPHSHIP_API ABoard : public AActor
@@ -19,6 +20,10 @@ private:
 	// Declare a property of type blueprint, to spawn as class later
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AActor> BP_PointClass;
+
+	// Declare a property of type blueprint, to spawn as class later
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AActor> BP_SquareClass;
 
 	// Declare a property of type blueprint, to spawn as class later
 	UPROPERTY(EditAnywhere)
@@ -41,6 +46,7 @@ private:
     int Spacing;
 
 	APoint*** BoardGrid;
+	ASquare*** BoardSquares;
 	ASpaceShip* Ship = nullptr;
 	UTrailComponent* Trail = nullptr;
 	bool Debug = false;
